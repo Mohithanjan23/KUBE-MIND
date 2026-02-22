@@ -1,0 +1,20 @@
+apiVersion: keda.sh/v1alpha1
+kind: ScaledObject
+metadata:
+  name: inference-queue-scaler
+  namespace: kube-mind-system
+spec:
+  scaleTargetRef:
+    name: inference-server
+  minReplicaCount: 2
+  maxReplicaCount: 10
+  cooldownPeriod: 30
+  triggers:
+  - type: prometheus
+    metadata:
+      # Requires Prometheus deployed in kube-mind-system
+      serverAddress: http://prometheus-server.kube-mind-system.svc.cluster.local:9090
+      metricName: envoy_cluster_upstream_rq_active
+      # Scale up when average queue depth > 4 per pod
+      threshold: "4"
+      query: sum(envoy_cluster_upstream_rq_active{cluster_name="inference_cluster"})

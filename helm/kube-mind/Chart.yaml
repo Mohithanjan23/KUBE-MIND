@@ -1,0 +1,6 @@
+apiVersion: v2
+name: kube-mind
+description: A Helm chart demonstrating real-time AI inference and horizontal scaling loopholes.
+type: application
+version: 0.1.0
+appVersion: "1.0.0"

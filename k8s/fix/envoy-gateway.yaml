@@ -1,0 +1,50 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: envoy-gateway
+  namespace: kube-mind-system
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: envoy-gateway
+  template:
+    metadata:
+      labels:
+        app: envoy-gateway
+        scrape-metrics: "true"
+    spec:
+      containers:
+      - name: envoy
+        image: envoyproxy/envoy:v1.27.0
+        ports:
+        - containerPort: 8080
+          name: grpc
+        - containerPort: 9901
+          name: admin
+        volumeMounts:
+        - name: envoy-config-volume
+          mountPath: /etc/envoy/envoy.yaml
+          subPath: envoy.yaml
+      volumes:
+      - name: envoy-config-volume
+        configMap:
+          name: envoy-config
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: envoy-gateway-service
+  namespace: kube-mind-system
+spec:
+  selector:
+    app: envoy-gateway
+  ports:
+  - port: 8080
+    targetPort: 8080
+    protocol: TCP
+    name: grpc
+  - port: 9901
+    targetPort: 9901
+    protocol: TCP
+    name: admin

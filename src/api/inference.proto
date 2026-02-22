@@ -1,0 +1,18 @@
+syntax = "proto3";
+
+package inference;
+option go_package = "kubemind/inference/api";
+
+service Inference {
+  rpc Predict (InferenceRequest) returns (InferenceResponse);
+}
+
+message InferenceRequest {
+  string data = 1;
+}
+
+message InferenceResponse {
+  string result = 1;
+  int64 queue_depth = 2;
+  int64 processing_time_ms = 3;
+}

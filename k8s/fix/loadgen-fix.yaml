@@ -1,0 +1,16 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: loadgen-fix
+  namespace: kube-mind-system
+spec:
+  template:
+    spec:
+      containers:
+      - name: loadgen
+        image: kubemind/loadgen:latest
+        imagePullPolicy: Never
+        # 100 concurrent requests targeted at Envoy, which load balances them!
+        args: ["-target", "envoy-gateway-service:8080", "-concurrency", "100"]
+      restartPolicy: Never
+  backoffLimit: 0

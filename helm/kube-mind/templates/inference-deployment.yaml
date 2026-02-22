@@ -1,0 +1,29 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "kube-mind.fullname" . }}-inference
+  labels:
+    app: {{ include "kube-mind.fullname" . }}
+spec:
+  replicas: {{ .Values.replicaCount }}
+  selector:
+    matchLabels:
+      app: {{ include "kube-mind.fullname" . }}-inference
+  template:
+    metadata:
+      labels:
+        app: {{ include "kube-mind.fullname" . }}-inference
+    spec:
+      containers:
+        - name: inference-server
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          ports:
+            - name: grpc
+              containerPort: 9000
+              protocol: TCP
+            - name: metrics
+              containerPort: 9090
+              protocol: TCP
+          resources:
+            {{- toYaml .Values.resources | nindent 12 }}

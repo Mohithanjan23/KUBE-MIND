@@ -1,0 +1,21 @@
+{{- if .Values.keda.enabled -}}
+apiVersion: keda.sh/v1alpha1
+kind: ScaledObject
+metadata:
+  name: {{ include "kube-mind.fullname" . }}-inference-scaler
+  labels:
+    app: {{ include "kube-mind.fullname" . }}
+spec:
+  scaleTargetRef:
+    name: {{ include "kube-mind.fullname" . }}-inference
+  minReplicaCount: {{ .Values.keda.minReplicaCount }}
+  maxReplicaCount: {{ .Values.keda.maxReplicaCount }}
+  cooldownPeriod: {{ .Values.keda.cooldownPeriod }}
+  triggers:
+  - type: prometheus
+    metadata:
+      serverAddress: http://prometheus-server.{{ .Release.Namespace }}.svc.cluster.local:9090
+      metricName: envoy_cluster_upstream_rq_active
+      threshold: {{ quote .Values.keda.threshold }}
+      query: sum(envoy_cluster_upstream_rq_active{cluster_name="inference_cluster"})
+{{- end -}}

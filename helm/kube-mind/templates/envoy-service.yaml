@@ -1,0 +1,21 @@
+{{- if .Values.envoy.enabled -}}
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "kube-mind.fullname" . }}-envoy
+  labels:
+    app: {{ include "kube-mind.fullname" . }}
+spec:
+  type: {{ .Values.service.type }}
+  ports:
+    - port: 8080
+      targetPort: grpc
+      protocol: TCP
+      name: grpc
+    - port: 9901
+      targetPort: admin
+      protocol: TCP
+      name: admin
+  selector:
+    app: {{ include "kube-mind.fullname" . }}-envoy
+{{- end -}}

@@ -1,0 +1,16 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: loadgen-loophole
+  namespace: kube-mind-system
+spec:
+  template:
+    spec:
+      containers:
+      - name: loadgen
+        image: kubemind/loadgen:latest
+        imagePullPolicy: Never
+        # 100 concurrent requests over a single TCP connection
+        args: ["-target", "inference-service:9000", "-concurrency", "100"]
+      restartPolicy: Never
+  backoffLimit: 0

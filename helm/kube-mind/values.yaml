@@ -1,0 +1,41 @@
+# Default values for kube-mind.
+
+replicaCount: 2
+
+image:
+  repository: kubemind/inference
+  pullPolicy: IfNotPresent
+  tag: "latest"
+
+service:
+  type: ClusterIP
+  grpcPort: 9000
+  metricsPort: 9090
+
+resources:
+  requests:
+    cpu: 100m
+    memory: 128Mi
+  limits:
+    cpu: 500m
+    memory: 256Mi
+
+autoscaling:
+  enabled: false
+  minReplicas: 2
+  maxReplicas: 10
+  targetCPUUtilizationPercentage: 60
+
+envoy:
+  enabled: true
+  image:
+    repository: envoyproxy/envoy
+    tag: v1.27.0
+  replicaCount: 1
+
+keda:
+  enabled: true
+  minReplicaCount: 2
+  maxReplicaCount: 10
+  cooldownPeriod: 30
+  threshold: "4"
